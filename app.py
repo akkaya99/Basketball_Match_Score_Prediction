@@ -25,7 +25,7 @@ with open("dt.pkl","rb") as file:
     dt = pickle.load(file)
 
 
-# Selecting Teams
+
 def team_selection(df):
     df_star_player = df.loc[(df["League"] == "NBA") & (df["PPM"] > 30)]
     captains = df_star_player["index"].drop_duplicates().sample(n=2)
@@ -52,7 +52,7 @@ team_a_players, team_b_players = show_teams(team_a, team_b)
 
 
 def player_times(team_a,team_b):
-    # Her bir oyuncunun oynadığı süreyi belirleme
+    
     total_time = 200
     min_time = 10
     max_time = 40
@@ -60,10 +60,10 @@ def player_times(team_a,team_b):
     team_a_df["MP"] = 0
 
     while True:
-        # Her bir oyuncunun oynayacağı süreyi belirleme
+        
         team_a_df["MP"] = [random.randint(min_time, max_time) for _ in range(len(team_a))]
 
-        # Toplam sürenin kontrolü
+        
         if team_a_df["MP"].sum() == total_time:
             break
 
@@ -71,10 +71,10 @@ def player_times(team_a,team_b):
     team_b_df["MP"] = 0
 
     while True:
-        # Her bir oyuncunun oynayacağı süreyi belirleme
+        
         team_b_df["MP"] = [random.randint(min_time, max_time) for _ in range(len(team_b))]
 
-        # Toplam sürenin kontrolü
+       
         if team_b_df["MP"].sum() == total_time:
             break
 
@@ -83,7 +83,7 @@ def player_times(team_a,team_b):
 team_a_df, team_b_df = player_times(team_a,team_b)
 
 def last_team_app(team_a,team_b):
-    # Son takım uygulaması işlevini buraya ekleyin
+    
     team_a = df.loc[team_a]
     team_b = df.loc[team_b]
 
@@ -176,7 +176,7 @@ def winner_loser(team_a_total_point, team_b_total_point):
     else:
         team_b_total_point += 1
         return ("TEAM B WON!\n\n" +
-                "TEAM A : " + str(team_a_total_point) + "  -  " "TEAM B : " + str(team_b_total_point)) # maçın berabere bitmsini istemiyoruz.
+                "TEAM A : " + str(team_a_total_point) + "  -  " "TEAM B : " + str(team_b_total_point)) 
 
 
 
@@ -188,21 +188,20 @@ result= winner_loser(team_a_total_point, team_b_total_point)
 def main():
 
     session_state = st.session_state
-
-    # Session state içinde gerekli verileri sakla
+    
     if 'team_a' not in session_state:
         session_state.team_a = None
     if 'team_b' not in session_state:
         session_state.team_b = None
 
-    # Takımları seçme
+   
     if left_main_col.button("SELECT TEAMS"):
-        team_a, team_b = team_selection(df)  # Takım seçimini çalıştır
-        team_a_players, team_b_players = show_teams(team_a, team_b)  # Takımları göster
-        session_state.a_takimi = team_a  # Session State'e sakla
-        session_state.team_b = team_b  # Session State'e sakla
+        team_a, team_b = team_selection(df)  
+        team_a_players, team_b_players = show_teams(team_a, team_b)  
+        session_state.a_takimi = team_a 
+        session_state.team_b = team_b  
 
-        # Takımları yan yana gösterme
+       
         teams_col1, teams_col2 = st.columns(2)
         with teams_col1:
             st.write(team_a_players)
@@ -211,10 +210,10 @@ def main():
 
 
 
-    # Maçı başlatma
+    
     if right_main_col.button("START MATCH"):
-        team_a = session_state.a_takimi  # Kaydedilen takımları al
-        team_b = session_state.team_b  # Kaydedilen takımları al
+        team_a = session_state.a_takimi 
+        team_b = session_state.team_b 
         if team_a is not None and team_b is not None:
             team_a_df, team_b_df = player_times(team_a, team_b)
             team_a, team_b = last_team_app(team_a, team_b)
@@ -225,7 +224,7 @@ def main():
             team_a, team_b = game_stats(team_a, team_b)
             team_a_stats, team_b_stats = match_stats(team_a, team_b)
 
-            # Team stats'i yan yana gösterme
+            
             stats_col1, stats_col2 = st.columns(2)
             with stats_col1:
                 st.write(team_a_stats)
