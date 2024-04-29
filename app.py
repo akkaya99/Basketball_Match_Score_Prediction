@@ -1,3 +1,4 @@
+# imorting
 import pandas as pd
 import streamlit as st
 import random
@@ -8,16 +9,19 @@ pd.set_option("display.max_rows", None)
 pd.set_option("display.width", 500)
 pd.set_option("display.float_format", lambda x: "%.2f" % x)
 
-
+# Page Title and Page Icon
 st.set_page_config(layout= "wide", page_title= "DREAM MATCH", page_icon= "🏀")
 
+
+# Page Header
 st.markdown("<h1 style='text-align: center;'>🏀 <font color='red'>DREAM MATCH</font> 🏀</h1>", unsafe_allow_html=True)
 
+# Page Arrangement
 main_tab = st.tabs(["Home"])
 home_content = main_tab[0]
 left_main_col, right_main_col = home_content.columns(2)
 
-
+# Loading Python Objects
 with open("df.pkl","rb") as file:
     df = pickle.load(file)
 
@@ -25,7 +29,7 @@ with open("dt.pkl","rb") as file:
     dt = pickle.load(file)
 
 
-
+# This function allows the creation of two teams of 12 players, with the team captain being an NBA star.
 def team_selection(df):
     df_star_player = df.loc[(df["League"] == "NBA") & (df["PPM"] > 30)]
     captains = df_star_player["index"].drop_duplicates().sample(n=2)
@@ -41,6 +45,7 @@ def team_selection(df):
 
 team_a,team_b = team_selection(df)
 
+# This function shows the teams
 def show_teams(team_a, team_b):
     team_a_players = dt.iloc[team_a].reset_index().drop(columns=["index"])
     team_a_players = team_a_players.rename(columns={"Season-Player": "TEAM A"})
@@ -50,7 +55,7 @@ def show_teams(team_a, team_b):
     return team_a_players, team_b_players
 team_a_players, team_b_players = show_teams(team_a, team_b)
 
-
+# It allows each player's time to be adjusted to a minimum of 10 and a maximum of 40 minutes. It also ensures that the total time of each team's players is 200 minutes.
 def player_times(team_a,team_b):
     
     total_time = 200
@@ -82,6 +87,7 @@ def player_times(team_a,team_b):
 
 team_a_df, team_b_df = player_times(team_a,team_b)
 
+# Makes edits to team dataframes
 def last_team_app(team_a,team_b):
     
     team_a = df.loc[team_a]
@@ -104,39 +110,41 @@ def last_team_app(team_a,team_b):
 
 team_a,team_b = last_team_app(team_a, team_b)
 
+# Creates the statistics of the players in this match.
 def game_stats(team_a, team_b):
-    team_a["MatchPoint"] = ((team_a["MP"] * (team_a["y_pred_point"] * 1.25)) / team_a["y_pred_minute"]).astype(
+    team_a["MatchPoint"] = ((team_a["MP"] * (team_a["y_pred_point"])) / team_a["y_pred_minute"]).astype(
         int)
-    team_b["MatchPoint"] = ((team_b["MP"] * (team_b["y_pred_point"] * 1.25)) / team_b["y_pred_minute"]).astype(
-        int)
-
-    team_a["MatchRebound"] = ((team_a["MP"] * (team_a["y_pred_rebound"] * 2)) / team_a["y_pred_minute"]).astype(
-        int)
-    team_b["MatchRebound"] = ((team_b["MP"] * (team_b["y_pred_rebound"] * 2)) / team_b["y_pred_minute"]).astype(
+    team_b["MatchPoint"] = ((team_b["MP"] * (team_b["y_pred_point"])) / team_b["y_pred_minute"]).astype(
         int)
 
-    team_a["MatchAsist"] = ((team_a["MP"] * (team_a["y_pred_asist"] * 1.25)) / team_a["y_pred_minute"]).astype(
+    team_a["MatchRebound"] = ((team_a["MP"] * (team_a["y_pred_rebound"])) / team_a["y_pred_minute"]).astype(
         int)
-    team_b["MatchAsist"] = ((team_b["MP"] * (team_b["y_pred_asist"] * 1.25)) / team_b["y_pred_minute"]).astype(
+    team_b["MatchRebound"] = ((team_b["MP"] * (team_b["y_pred_rebound"])) / team_b["y_pred_minute"]).astype(
         int)
 
-    team_a["MatchBlock"] = ((team_a["MP"] * (team_a["y_pred_block"] * 3)) / team_a["y_pred_minute"]).astype(int)
-    team_b["MatchBlock"] = ((team_b["MP"] * (team_b["y_pred_block"] * 3)) / team_b["y_pred_minute"]).astype(int)
+    team_a["MatchAsist"] = ((team_a["MP"] * (team_a["y_pred_asist"])) / team_a["y_pred_minute"]).astype(
+        int)
+    team_b["MatchAsist"] = ((team_b["MP"] * (team_b["y_pred_asist"])) / team_b["y_pred_minute"]).astype(
+        int)
+
+    team_a["MatchBlock"] = ((team_a["MP"] * (team_a["y_pred_block"])) / team_a["y_pred_minute"]).astype(int)
+    team_b["MatchBlock"] = ((team_b["MP"] * (team_b["y_pred_block"])) / team_b["y_pred_minute"]).astype(int)
 
     team_a["MatchTOV"] = ((team_a["MP"] * (team_a["y_pred_tov"])) / team_a["y_pred_minute"]).astype(int)
     team_b["MatchTOV"] = ((team_b["MP"] * (team_b["y_pred_tov"])) / team_b["y_pred_minute"]).astype(int)
 
-    team_a["MatchSteal"] = ((team_a["MP"] * (team_a["y_pred_steal"] * 3)) / team_a["y_pred_minute"]).astype(int)
-    team_b["MatchSteal"] = ((team_b["MP"] * (team_b["y_pred_steal"] * 3)) / team_b["y_pred_minute"]).astype(int)
+    team_a["MatchSteal"] = ((team_a["MP"] * (team_a["y_pred_steal"])) / team_a["y_pred_minute"]).astype(int)
+    team_b["MatchSteal"] = ((team_b["MP"] * (team_b["y_pred_steal"])) / team_b["y_pred_minute"]).astype(int)
 
-    team_a["MatchFoul"] = ((team_a["MP"] * (team_a["y_pred_foul"] * 1.25)) / team_a["y_pred_minute"]).astype(
+    team_a["MatchFoul"] = ((team_a["MP"] * (team_a["y_pred_foul"])) / team_a["y_pred_minute"]).astype(
         int)
-    team_b["MatchFoul"] = ((team_b["MP"] * (team_b["y_pred_foul"] * 1.25)) / team_b["y_pred_minute"]).astype(
+    team_b["MatchFoul"] = ((team_b["MP"] * (team_b["y_pred_foul"])) / team_b["y_pred_minute"]).astype(
         int)
 
     return team_a, team_b
 team_a, team_b = game_stats(team_a, team_b)
 
+# Shows the statistics of the players in this match.
 def match_stats(team_a, team_b):
 
     team_a_indexes = team_a["index"].to_list()
@@ -157,7 +165,7 @@ def match_stats(team_a, team_b):
 team_a_stats, team_b_stats = match_stats(team_a, team_b)
 
 
-
+# Shows the total points of the teams in this match.
 def team_points(team_a, team_b):
     team_a_total_point = team_a["MatchPoint"].sum()
     team_b_total_point = team_b["MatchPoint"].sum()
@@ -165,7 +173,7 @@ def team_points(team_a, team_b):
 
 team_a_total_point,team_b_total_point=team_points(team_a, team_b)
 
-
+# Shows the winning team
 def winner_loser(team_a_total_point, team_b_total_point):
     if team_a_total_point > team_b_total_point:
         return ("TEAM A WON!\n\n" +
@@ -194,7 +202,7 @@ def main():
     if 'team_b' not in session_state:
         session_state.team_b = None
 
-   
+   # Creation of "SELECT TEAMS" button 
     if left_main_col.button("SELECT TEAMS"):
         team_a, team_b = team_selection(df)  
         team_a_players, team_b_players = show_teams(team_a, team_b)  
@@ -210,7 +218,7 @@ def main():
 
 
 
-    
+    # Creation of "START MATCH" button 
     if right_main_col.button("START MATCH"):
         team_a = session_state.a_takimi 
         team_b = session_state.team_b 
